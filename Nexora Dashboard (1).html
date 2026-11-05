@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXORA DASHBOARD — منصة السحاب المستقبلية</title>
+  <!-- خط Cairo الأنيق -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#07050f',
+              card: 'rgba(22, 12, 52, 0.65)',
+              border: 'rgba(167, 139, 250, 0.2)',
+              purple: '#8b5cf6',
+              cyan: '#22d3ee',
+              pink: '#ec4899',
+              green: '#10b981',
+              red: '#ef4444',
+              yellow: '#f59e0b'
+            }
+          },
+          fontFamily: {
+            cairo: ['Cairo', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #07050f;
+      color: #f1edff;
+      overflow-x: hidden;
+    }
+    
+    /* خلفيات التوهج النيوني الفاخر */
+    .glow-bg-1 {
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(139,92,246,0.25) 0%, rgba(0,0,0,0) 70%);
+      top: -150px;
+      right: -100px;
+      z-index: -1;
+      pointer-events: none;
+      animation: floatGlow 14s ease-in-out infinite alternate;
+    }
+
+    .glow-bg-2 {
+      position: fixed;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(34,211,238,0.2) 0%, rgba(0,0,0,0) 70%);
+      bottom: -150px;
+      left: -100px;
+      z-index: -1;
+      pointer-events: none;
+      animation: floatGlow 18s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes floatGlow {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.15); }
+    }
+
+    /* تأثيرات البطاقات الزجاجية Glassmorphism */
+    .glass-card {
+      background: rgba(22, 12, 52, 0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(167, 139, 250, 0.18);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .glass-card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card-hover:hover {
+      transform: translateY(-3px);
+      border-color: rgba(139, 92, 246, 0.45);
+      box-shadow: 0 15px 35px -10px rgba(139, 92, 246, 0.25);
+    }
+
+    .text-gradient {
+      background: linear-gradient(135deg, #a78bfa, #8b5cf6 40%, #22d3ee);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .btn-gradient {
+      background: linear-gradient(135deg, #8b5cf6, #6366f1 50%, #22d3ee);
+      box-shadow: 0 4px 20px -5px rgba(139, 92, 246, 0.6);
+      transition: all 0.25s ease;
+    }
+    .btn-gradient:hover {
+      filter: brightness(1.15);
+      box-shadow: 0 6px 25px -4px rgba(34, 211, 238, 0.7);
+      transform: translateY(-1px);
+    }
+
+    /* شريط التمرير الأنيق */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(7, 5, 15, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(139, 92, 246, 0.35);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(139, 92, 246, 0.7);
+    }
+
+    /* ألوان حالات البوتات */
+    .status-running {
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .status-stopped {
+      color: #9ca3af;
+      background: rgba(156, 163, 175, 0.12);
+      border: 1px solid rgba(156, 163, 175, 0.3);
+    }
+    .status-installing {
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .status-running .pulse-dot {
+      background-color: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulse 1.5s infinite;
+    }
+    .status-stopped .pulse-dot {
+      background-color: #9ca3af;
+    }
+    .status-installing .pulse-dot {
+      background-color: #f59e0b;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+  <!-- الخلفيات النيونية -->
+  <div class="glow-bg-1"></div>
+  <div class="glow-bg-2"></div>
+
+  <!-- الهيدر العلوي Header -->
+  <header class="sticky top-0 z-40 w-full glass-card border-b border-brand-border px-4 lg:px-8 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-purple-500/30">
+        <i data-lucide="cpu" class="w-6 h-6 text-white"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-black tracking-wider text-gradient leading-none">NEXORA</h1>
+        <span class="text-[10px] text-purple-300/60 font-semibold tracking-widest uppercase">ULTRA DASHBOARD CLOUD</span>
+      </div>
+    </div>
+
+    <!-- مؤشر حالة النظام والسيرفر -->
+    <div class="flex items-center gap-4">
+      <div class="hidden md:flex items-center gap-2 bg-purple-950/40 border border-purple-500/20 px-3 py-1.5 rounded-full text-xs">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="text-purple-200">السيرفر المحلي: <strong class="text-emerald-400">متصل (100%)</strong></span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="btn-notifications" class="p-2 rounded-xl glass-card text-purple-300 hover:text-white hover:bg-purple-900/40 transition-colors relative">
+          <i data-lucide="bell" class="w-5 h-5"></i>
+          <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-cyan-400 rounded-full"></span>
+        </button>
+        <div class="flex items-center gap-2 pr-2 border-r border-brand-border/40">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-cyan-500 flex items-center justify-center font-bold text-sm text-white shadow">
+            M
+          </div>
+          <span class="text-sm font-semibold hidden sm:inline text-purple-100">مهند (المالك)</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- محتوى المنصة الرئيسي Framework Layout -->
+  <div class="flex-1 flex flex-col md:flex-row max-w-7xl w-full mx-auto p-3 sm:p-6 gap-6">
+
+    <!-- القائمة الجانبية (Navigation Sidebar) -->
+    <nav class="w-full md:w-64 glass-card rounded-2xl p-4 flex flex-row md:flex-col justify-between md:justify-start gap-2 border border-brand-border shrink-0 overflow-x-auto">
+      <div class="flex flex-row md:flex-col gap-1 w-full min-w-max md:min-w-0">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn active flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all w-full text-right bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/30">
+          <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+          <span>الرئيسية والإحصائيات</span>
+        </button>
+
+        <button onclick="switchTab('bots')" id="nav-bots" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all w-full text-right text-purple-200/70 hover:bg-purple-900/30 hover:text-white">
+          <i data-lucide="bot" class="w-5 h-5"></i>
+          <div class="flex items-center justify-between w-full">
+            <span>إدارة البوتات</span>
+            <span id="badge-bot-count" class="bg-purple-800/60 text-purple-200 text-xs px-2 py-0.5 rounded-md">3</span>
+          </div>
+        </button>
+
+        <button onclick="switchTab('console')" id="nav-console" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all w-full text-right text-purple-200/70 hover:bg-purple-900/30 hover:text-white">
+          <i data-lucide="terminal" class="w-5 h-5"></i>
+          <span>السجلات (Console)</span>
+        </button>
+
+        <button onclick="switchTab('ai-studio')" id="nav-ai-studio" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all w-full text-right text-purple-200/70 hover:bg-purple-900/30 hover:text-white">
+          <i data-lucide="sparkles" class="w-5 h-5 text-cyan-400"></i>
+          <span>المطور الذكي (AI)</span>
+        </button>
+
+        <button onclick="switchTab('files')" id="nav-files" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all w-full text-right text-purple-200/70 hover:bg-purple-900/30 hover:text-white">
+          <i data-lucide="folder-tree" class="w-5 h-5"></i>
+          <span>مدير الملفات</span>
+        </button>
+      </div>
+
+      <!-- معلومات سفلية بالقائمة -->
+      <div class="hidden md:flex flex-col gap-3 mt-auto pt-4 border-t border-brand-border/40">
+        <div class="bg-purple-950/40 p-3 rounded-xl border border-purple-500/20 text-xs">
+          <div class="flex justify-between text-purple-300 mb-1">
+            <span>استهلاك الخادم</span>
+            <span id="sidebar-cpu-text">42%</span>
+          </div>
+          <div class="w-full bg-purple-900/50 h-1.5 rounded-full overflow-hidden">
+            <div id="sidebar-cpu-bar" class="bg-gradient-to-r from-purple-500 to-cyan-400 h-full w-[42%] transition-all duration-500"></div>
+          </div>
+        </div>
+        <div class="text-[11px] text-center text-purple-400/50">
+          NEXORA Engine v3.5 • 2026
+        </div>
+      </div>
+    </nav>
+
+    <!-- منطقة المحتوى الرئيسية Main Display Area -->
+    <main class="flex-1 min-w-0">
+
+      <!-- ================= 1. TAB: DASHBOARD ================= -->
+      <section id="tab-dashboard" class="tab-content flex flex-col gap-6">
+        <!-- ترحيب وتنبيه -->
+        <div class="glass-card rounded-2xl p-6 relative overflow-hidden border border-brand-border bg-gradient-to-r from-purple-900/30 via-indigo-900/20 to-cyan-900/10">
+          <div class="relative z-10 max-w-xl">
+            <h2 class="text-2xl font-black text-white mb-2">أهلاً بك مجدداً في <span class="text-gradient">NEXORA AI</span> 👋</h2>
+            <p class="text-sm text-purple-200/70 leading-relaxed">
+              جميع السيرفرات والبوتات تعمل بكفاءة عالية على الخادم المحلي السريع. يمكنك مراقبة الموارد وتطوير البوتات بالذكاء الاصطناعي مباشرة.
+            </p>
+          </div>
+          <i data-lucide="zap" class="absolute left-6 bottom-2 w-32 h-32 text-purple-500/10 pointer-events-none"></i>
+        </div>
+
+        <!-- بطاقات الإحصائيات الفائقة -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- بطاقة البوتات -->
+          <div class="glass-card glass-card-hover rounded-2xl p-4 border border-brand-border">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-purple-300/70">البوتات النشطة</span>
+              <div class="p-2 bg-purple-500/10 rounded-xl text-purple-400">
+                <i data-lucide="bot" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <div class="text-2xl font-black text-white mb-1" id="stat-active-bots">2 / 3</div>
+            <div class="text-[11px] text-emerald-400 flex items-center gap-1">
+              <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+              <span>معدل التشغيل 99.9%</span>
+            </div>
+          </div>
+
+          <!-- بطاقة للمعالج CPU -->
+          <div class="glass-card glass-card-hover rounded-2xl p-4 border border-brand-border">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-purple-300/70">استهلاك المعالج CPU</span>
+              <div class="p-2 bg-cyan-500/10 rounded-xl text-cyan-400">
+                <i data-lucide="cpu" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <div class="text-2xl font-black text-white mb-1" id="stat-cpu">28%</div>
+            <div class="text-[11px] text-purple-300/70">8 Cores Virtualized</div>
+          </div>
+
+          <!-- بطاقة الذاكرة RAM -->
+          <div class="glass-card glass-card-hover rounded-2xl p-4 border border-brand-border">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-purple-300/70">الذاكرة RAM العشوائية</span>
+              <div class="p-2 bg-indigo-500/10 rounded-xl text-indigo-400">
+                <i data-lucide="hard-drive" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <div class="text-2xl font-black text-white mb-1" id="stat-ram">1.4 GB / 4 GB</div>
+            <div class="text-[11px] text-purple-300/70">35% من السعة المستخدمة</div>
+          </div>
+
+          <!-- بطاقة الشبكة Network -->
+          <div class="glass-card glass-card-hover rounded-2xl p-4 border border-brand-border">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-purple-300/70">حركة الشبكة (Net Rx/Tx)</span>
+              <div class="p-2 bg-pink-500/10 rounded-xl text-pink-400">
+                <i data-lucide="activity" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <div class="text-2xl font-black text-white mb-1" id="stat-net">4.2 KB/s</div>
+            <div class="text-[11px] text-cyan-400">اتصالات فائقة السرعة</div>
+          </div>
+        </div>
+
+        <!-- الرسم البياني المباشر لتشغيل السيرفر -->
+        <div class="glass-card rounded-2xl p-5 border border-brand-border">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <h3 class="font-bold text-white text-base">مراقبة أداء السيرفر المباشرة</h3>
+              <p class="text-xs text-purple-300/60">رسم بياني حي يعرض أداء CPU (البنفسجي) والذاكرة (السيان)</p>
+            </div>
+            <div class="flex items-center gap-4 text-xs font-semibold">
+              <span class="flex items-center gap-1.5 text-purple-400">
+                <span class="w-3 h-3 rounded-full bg-purple-500"></span> CPU
+              </span>
+              <span class="flex items-center gap-1.5 text-cyan-400">
+                <span class="w-3 h-3 rounded-full bg-cyan-400"></span> RAM
+              </span>
+            </div>
+          </div>
+
+          <!-- Canvas Graph -->
+          <div class="w-full h-52 relative">
+            <canvas id="livePerformanceCanvas" class="w-full h-full block rounded-xl"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. TAB: BOTS MANAGEMENT ================= -->
+      <section id="tab-bots" class="tab-content hidden flex-col gap-6">
+        <!-- شريط إضافة بوت جديد -->
+        <div class="glass-card rounded-2xl p-5 border border-brand-border">
+          <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+            <i data-lucide="plus-circle" class="w-5 h-5 text-cyan-400"></i>
+            إنشاء وبناء بوت جديد
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <input type="text" id="new-bot-name" placeholder="اسم البوت (مثال: Nexora Admin)" class="bg-black/30 border border-brand-border rounded-xl px-4 py-2.5 text-sm text-white placeholder-purple-300/40 focus:outline-none focus:border-purple-500">
+            <input type="text" id="new-bot-token" placeholder="توكن البوت Telegram Token" class="bg-black/30 border border-brand-border rounded-xl px-4 py-2.5 text-sm text-white placeholder-purple-300/40 focus:outline-none focus:border-purple-500">
+            <button onclick="createNewBot()" class="btn-gradient text-white font-bold rounded-xl px-5 py-2.5 text-sm flex items-center justify-center gap-2">
+              <i data-lucide="zap" class="w-4 h-4"></i>
+              <span>إنشاء البوت الآن</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- قائمة البوتات المسجلة -->
+        <div class="flex flex-col gap-4">
+          <h3 class="text-base font-bold text-purple-200">قائمة البوتات المنشأة (3)</h3>
+          <div id="bots-container" class="grid grid-cols-1 gap-4">
+            <!-- سيتم إنشاء كروت البوتات ديناميكياً باستخدام JavaScript -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. TAB: LIVE CONSOLE LOGS ================= -->
+      <section id="tab-console" class="tab-content hidden flex-col gap-4">
+        <div class="glass-card rounded-2xl p-4 border border-brand-border flex flex-col h-[520px]">
+          <!-- أدوات الكنسول -->
+          <div class="flex items-center justify-between pb-3 border-b border-brand-border mb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full bg-red-500"></div>
+              <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+              <div class="w-3 h-3 rounded-full bg-green-500"></div>
+              <span class="text-xs font-mono text-purple-300/70 mr-2">system-live.log</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button onclick="clearConsoleLog()" class="px-3 py-1.5 rounded-lg bg-purple-950/60 hover:bg-purple-900 border border-purple-500/30 text-xs text-purple-200 flex items-center gap-1.5">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5 text-red-400"></i>
+                <span>مسح السجل</span>
+              </button>
+              <button onclick="copyConsoleLog()" class="px-3 py-1.5 rounded-lg bg-purple-950/60 hover:bg-purple-900 border border-purple-500/30 text-xs text-purple-200 flex items-center gap-1.5">
+                <i data-lucide="copy" class="w-3.5 h-3.5 text-cyan-400"></i>
+                <span>نسخ السجل</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- شاشة المخرجات -->
+          <div id="console-output" class="flex-1 bg-black/60 rounded-xl p-4 font-mono text-xs overflow-y-auto space-y-2 dir-ltr text-left border border-black/40">
+            <!-- السجلات ستظهر هنا تلقائياً -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4. TAB: AI STUDIO ================= -->
+      <section id="tab-ai-studio" class="tab-content hidden flex-col gap-6">
+        <div class="glass-card rounded-2xl p-6 border border-brand-border">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="p-3 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+              <i data-lucide="sparkles" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-black text-white">استوديو التطوير بالذكاء الاصطناعي NEXORA AI</h3>
+              <p class="text-xs text-purple-300/70">اكتب وصفاً للبوت الذي تريد إنشاءه أو البرمجيات المطلوبة وسيتولى المساعد الذكي كتابتها لك فوريًا</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-4">
+            <div>
+              <label class="block text-xs font-bold text-purple-300 mb-2">اختر البوت المستهدف:</label>
+              <select id="ai-target-bot" class="w-full bg-black/40 border border-brand-border rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500">
+                <option value="bot-1">Nexora Telegram Bot (main.js)</option>
+                <option value="bot-2">Store Helper Bot (index.js)</option>
+                <option value="bot-3">Crypto Alert Bot (app.js)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-purple-300 mb-2">الأمر والمهمة المطلوبة من الذكاء الاصطناعي:</label>
+              <textarea id="ai-prompt-input" rows="4" placeholder="مثال: أضف ميزة الرد التلقائي على كلمة /start وأضف قائمة أزرار شفافة Inline Keyboard لعرض الأسعار والخدمات..." class="w-full bg-black/40 border border-brand-border rounded-xl p-4 text-sm text-white placeholder-purple-300/40 focus:outline-none focus:border-purple-500 leading-relaxed"></textarea>
+            </div>
+
+            <button onclick="runAiAssistantTask()" id="btn-run-ai" class="btn-gradient text-white font-bold rounded-xl py-3 text-sm flex items-center justify-center gap-2">
+              <i data-lucide="play" class="w-4 h-4"></i>
+              <span>بدء التطوير البرمجي الذكي</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- نتيجة الذكاء الاصطناعي -->
+        <div id="ai-result-card" class="glass-card rounded-2xl p-5 border border-brand-border hidden">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="font-bold text-sm text-cyan-400 flex items-center gap-2">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+              تم تنفيذ المهمة بنجاح والتعديل في الملف الرئيسي!
+            </h4>
+            <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-md border border-emerald-500/30">اكتمل 100%</span>
+          </div>
+          <pre id="ai-code-preview" class="bg-black/70 p-4 rounded-xl text-xs font-mono text-purple-200 overflow-x-auto border border-purple-500/20 dir-ltr text-left">
+// Code updated by NEXORA AI Studio
+          </pre>
+        </div>
+      </section>
+
+      <!-- ================= 5. TAB: FILE EXPLORER ================= -->
+      <section id="tab-files" class="tab-content hidden flex-col gap-4">
+        <div class="glass-card rounded-2xl p-5 border border-brand-border">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-white text-base flex items-center gap-2">
+              <i data-lucide="folder" class="w-5 h-5 text-purple-400"></i>
+              مستكشف ملفات البوت الشامل
+            </h3>
+            <button onclick="createNewFileSim()" class="px-3 py-1.5 rounded-xl bg-purple-600/40 hover:bg-purple-600 text-xs text-white border border-purple-400/30 flex items-center gap-1.5">
+              <i data-lucide="file-plus" class="w-4 h-4"></i>
+              <span>ملف جديد</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- قائمة الملفات الجانبية -->
+            <div class="bg-black/40 rounded-xl p-3 border border-brand-border flex flex-col gap-1">
+              <button onclick="openFileSim('main.js')" class="file-item active flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono text-purple-200 hover:bg-purple-900/40 w-full text-right bg-purple-900/60 border border-purple-500/30">
+                <i data-lucide="file-code" class="w-4 h-4 text-cyan-400"></i>
+                <span>main.js</span>
+              </button>
+              <button onclick="openFileSim('config.json')" class="file-item flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono text-purple-200 hover:bg-purple-900/40 w-full text-right">
+                <i data-lucide="file-json" class="w-4 h-4 text-yellow-400"></i>
+                <span>config.json</span>
+              </button>
+              <button onclick="openFileSim('database.sqlite')" class="file-item flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono text-purple-200 hover:bg-purple-900/40 w-full text-right">
+                <i data-lucide="database" class="w-4 h-4 text-emerald-400"></i>
+                <span>database.sqlite</span>
+              </button>
+            </div>
+
+            <!-- محرر الملفات المباشر -->
+            <div class="md:col-span-2 bg-black/60 rounded-xl p-3 border border-brand-border flex flex-col gap-2">
+              <div class="flex items-center justify-between text-xs text-purple-300/70 border-b border-brand-border pb-2">
+                <span id="current-file-name" class="font-mono text-cyan-300">main.js</span>
+                <button onclick="saveCurrentFile()" class="px-3 py-1 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-md text-white font-semibold hover:brightness-110">حفظ التغييرات</button>
+              </div>
+              <textarea id="file-editor-content" rows="12" class="w-full bg-transparent font-mono text-xs text-purple-100 focus:outline-none leading-relaxed dir-ltr text-left">
+// NEXORA AI Bot Engine v3.5
+const bot = createBot(process.env.BOT_TOKEN);
+
+bot.command('start', (ctx) => {
+  ctx.reply('أهلاً بك في بوت NEXORA الفاخر! 🚀');
+});
+
+bot.command('ping', (ctx) => {
+  ctx.reply('Pong! 🏓 السيرفر يعمل بكفاءة كاملة.');
+});
+
+bot.launch();
+              </textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Javascript logic -->
+  <script>
+    // تهيئة الأيقونات Lucide Icons
+    lucide.createIcons();
+
+    // حالة البوتات التفاعلية
+    let botsList = [
+      { id: 'bot-1', name: 'Nexora Telegram Bot', status: 'running', uptime: 42300, memory: '48.2 MB', file: 'main.js' },
+      { id: 'bot-2', name: 'Store Helper Bot', status: 'running', uptime: 12500, memory: '32.1 MB', file: 'index.js' },
+      { id: 'bot-3', name: 'Crypto Alert Bot', status: 'stopped', uptime: 0, memory: '0 MB', file: 'app.js' }
+    ];
+
+    // ملفات النظام المحاكاة
+    const mockFiles = {
+      'main.js': `// NEXORA AI Bot Engine v3.5\nconst bot = createBot(process.env.BOT_TOKEN);\n\nbot.command('start', (ctx) => {\n  ctx.reply('أهلاً بك في بوت NEXORA الفاخر! 🚀');\n});\n\nbot.command('ping', (ctx) => {\n  ctx.reply('Pong! 🏓 السيرفر يعمل بكفاءة كاملة.');\n});\n\nbot.launch();`,
+      'config.json': `{\n  "bot_name": "Nexora Main Bot",\n  "version": "3.5.0",\n  "max_connections": 1000,\n  "auto_restart": true\n}`,
+      'database.sqlite': `[ Binary SQLite Database Data Saved Locally ]`
+    };
+
+    let activeFile = 'main.js';
+
+    // 1. التبديل بين التبويبات Tabs
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-gradient-to-r', 'from-purple-600', 'to-indigo-600', 'text-white', 'shadow-lg', 'shadow-purple-600/30');
+        btn.classList.add('text-purple-200/70');
+      });
+
+      const activeTab = document.getElementById(`tab-${tabId}`);
+      const activeNavBtn = document.getElementById(`nav-${tabId}`);
+
+      if (activeTab) activeTab.classList.remove('hidden');
+      if (activeNavBtn) {
+        activeNavBtn.classList.add('active', 'bg-gradient-to-r', 'from-purple-600', 'to-indigo-600', 'text-white', 'shadow-lg', 'shadow-purple-600/30');
+        activeNavBtn.classList.remove('text-purple-200/70');
+      }
+    }
+
+    // 2. تحديث وعرض البوتات
+    function renderBots() {
+      const container = document.getElementById('bots-container');
+      container.innerHTML = '';
+
+      let runningCount = 0;
+
+      botsList.forEach(bot => {
+        if (bot.status === 'running') runningCount++;
+
+        const statusClass = bot.status === 'running' ? 'status-running' : (bot.status === 'installing' ? 'status-installing' : 'status-stopped');
+        const statusText = bot.status === 'running' ? 'يعمل الآن' : (bot.status === 'installing' ? 'جارٍ التثبيت...' : 'متوقف');
+
+        const card = document.createElement('div');
+        card.className = 'glass-card glass-card-hover rounded-2xl p-5 border border-brand-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4';
+        
+        card.innerHTML = `
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-purple-900/40 border border-purple-500/30 flex items-center justify-center text-purple-300">
+              <i data-lucide="bot" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h4 class="font-bold text-base text-white">${bot.name}</h4>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${statusClass} flex items-center gap-1.5">
+                  <span class="pulse-dot"></span>
+                  ${statusText}
+                </span>
+              </div>
+              <p class="text-xs text-purple-300/60 mt-1">
+                الملف الرئيسي: <code class="text-cyan-300 font-mono">${bot.file}</code> • الذاكرة: ${bot.memory}
+              </p>
+            </div>
+          </div>
+
+          <!-- الأزرار والتحكم -->
+          <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            ${bot.status === 'running' 
+              ? `<button onclick="toggleBotStatus('${bot.id}', 'stopped')" class="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 text-xs font-bold transition-all">إيقاف</button>` 
+              : `<button onclick="toggleBotStatus('${bot.id}', 'running')" class="px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 text-xs font-bold transition-all">تشغيل</button>`
+            }
+            <button onclick="toggleBotStatus('${bot.id}', 'installing')" class="px-3 py-2 rounded-xl bg-purple-950/60 border border-purple-500/30 text-purple-300 hover:bg-purple-900 text-xs font-bold">إعادة تشغيل</button>
+            <button onclick="deleteBot('${bot.id}')" class="p-2 rounded-xl bg-red-950/40 border border-red-500/20 text-red-400 hover:bg-red-900/40">
+              <i data-lucide="trash" class="w-4 h-4"></i>
+            </button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      document.getElementById('stat-active-bots').textContent = `${runningCount} / ${botsList.length}`;
+      document.getElementById('badge-bot-count').textContent = botsList.length;
+      lucide.createIcons();
+    }
+
+    // 3. إنشاء بوت جديد
+    function createNewBot() {
+      const nameInput = document.getElementById('new-bot-name');
+      const tokenInput = document.getElementById('new-bot-token');
+
+      if (!nameInput.value.trim()) {
+        showToast('يرجى إدخال اسم البوت أولاً', 'error');
+        return;
+      }
+
+      const newBot = {
+        id: 'bot-' + Date.now(),
+        name: nameInput.value.trim(),
+        status: 'running',
+        uptime: 0,
+        memory: '14.5 MB',
+        file: 'main.js'
+      };
+
+      botsList.push(newBot);
+      renderBots();
+
+      nameInput.value = '';
+      tokenInput.value = '';
+
+      showToast(`تم إنشاء وتغير البوت "${newBot.name}" بنجاح!`, 'success');
+      addConsoleLog(`[NEXORA ENGINE] Bot created and launched: ${newBot.name}`);
+    }
+
+    // تغيير حالة البوت
+    function toggleBotStatus(botId, newStatus) {
+      const bot = botsList.find(b => b.id === botId);
+      if (bot) {
+        bot.status = newStatus;
+        if (newStatus === 'installing') {
+          setTimeout(() => {
+            bot.status = 'running';
+            renderBots();
+            addConsoleLog(`[SYSTEM] Bot ${bot.name} restarted successfully.`);
+          }, 1500);
+        }
+        renderBots();
+        showToast(`تم تغيير حالة البوت ${bot.name} إلى ${newStatus === 'running' ? 'تشغيل' : 'إيقاف'}`, 'info');
+        addConsoleLog(`[SYSTEM] Bot ${bot.name} status updated: ${newStatus}`);
+      }
+    }
+
+    // حذف البوت
+    function deleteBot(botId) {
+      botsList = botsList.filter(b => b.id !== botId);
+      renderBots();
+      showToast('تم حذف البوت بنجاح', 'info');
+    }
+
+    // 4. المحاكاة الحية لرسم بياني لأداء السيرفر (Canvas Graphics)
+    const canvas = document.getElementById('livePerformanceCanvas');
+    const ctx = canvas.getContext('2d');
+    let cpuData = Array(30).fill(25);
+    let ramData = Array(30).fill(35);
+
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function drawChart() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const w = canvas.width;
+      const h = canvas.height;
+      const step = w / (cpuData.length - 1);
+
+      // رسم شبكة الخلفية
+      ctx.strokeStyle = 'rgba(167, 139, 250, 0.08)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < h; i += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(w, i);
+        ctx.stroke();
+      }
+
+      // رسم خط CPU (البنفسجي)
+      ctx.beginPath();
+      ctx.strokeStyle = '#8b5cf6';
+      ctx.lineWidth = 3;
+      cpuData.forEach((val, i) => {
+        const x = i * step;
+        const y = h - (val / 100) * h;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // رسم خط RAM (السيان)
+      ctx.beginPath();
+      ctx.strokeStyle = '#22d3ee';
+      ctx.lineWidth = 3;
+      ramData.forEach((val, i) => {
+        const x = i * step;
+        const y = h - (val / 100) * h;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    }
+
+    // تحديث البيانات الحية تلقائياً
+    setInterval(() => {
+      const newCpu = Math.floor(Math.random() * 25) + 20;
+      const newRam = Math.floor(Math.random() * 10) + 32;
+
+      cpuData.shift();
+      cpuData.push(newCpu);
+
+      ramData.shift();
+      ramData.push(newRam);
+
+      document.getElementById('stat-cpu').textContent = newCpu + '%';
+      document.getElementById('sidebar-cpu-text').textContent = newCpu + '%';
+      document.getElementById('sidebar-cpu-bar').style.width = newCpu + '%';
+
+      drawChart();
+    }, 2000);
+
+    // 5. سجل الأحداث Console Log
+    const consoleOutput = document.getElementById('console-output');
+
+    function addConsoleLog(message, type = 'info') {
+      const time = new Date().toLocaleTimeString('en-GB');
+      const div = document.createElement('div');
+      
+      let colorClass = 'text-purple-300';
+      if (type === 'error') colorClass = 'text-red-400 font-bold';
+      if (type === 'success') colorClass = 'text-emerald-400 font-bold';
+
+      div.className = `${colorClass} flex items-start gap-2`;
+      div.innerHTML = `<span class="text-purple-400/50">[${time}]</span> <span>${message}</span>`;
+
+      consoleOutput.appendChild(div);
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+
+    function clearConsoleLog() {
+      consoleOutput.innerHTML = '';
+      showToast('تم مسح السجل البرمجي', 'info');
+    }
+
+    function copyConsoleLog() {
+      navigator.clipboard.writeText(consoleOutput.innerText);
+      showToast('تم نسخ السجل إلى الحافظة', 'success');
+    }
+
+    // سجلات مبدئية
+    addConsoleLog('[NEXORA LOCAL ENGINE] Local server successfully booted.');
+    addConsoleLog('[TELEGRAM API] Polling updates for 2 active bots...');
+    addConsoleLog('[DATABASE] IndexedDB synced with local storage.');
+
+    // 6. المطور الذكي (AI Studio Simulation)
+    function runAiAssistantTask() {
+      const prompt = document.getElementById('ai-prompt-input').value.trim();
+      const btn = document.getElementById('btn-run-ai');
+
+      if (!prompt) {
+        showToast('يرجى كتابة وصف المهمة للذكاء الاصطناعي', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> <span>جاري معالجة الكود بالذكاء الاصطناعي...</span>`;
+      lucide.createIcons();
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="play" class="w-4 h-4"></i> <span>بدء التطوير البرمجي الذكي</span>`;
+        lucide.createIcons();
+
+        const resultCard = document.getElementById('ai-result-card');
+        const codePreview = document.getElementById('ai-code-preview');
+        
+        resultCard.classList.remove('hidden');
+        const newGeneratedCode = `// Generated Code based on prompt: "${prompt}"\nconst bot = createBot(process.env.BOT_TOKEN);\n\nbot.command('start', (ctx) => {\n  ctx.reply('مرحباً بك! تم تطبيق الفكرة الذكية بنجاح 🎉', {\n    reply_markup: {\n      inline_keyboard: [\n        [{ text: "🔥 العروض", callback_data: "offers" }, { text: "💬 الدعم", callback_data: "support" }]\n      ]\n    }\n  });\n});\n\nbot.launch();`;
+
+        codePreview.textContent = newGeneratedCode;
+        mockFiles['main.js'] = newGeneratedCode;
+        document.getElementById('file-editor-content').value = newGeneratedCode;
+
+        showToast('تم تحديث وتطوير البوت بنجاح!', 'success');
+        addConsoleLog(`[AI STUDIO] Successfully updated main.js based on user prompt.`);
+      }, 2000);
+    }
+
+    // 7. مدير الملفات Simulation
+    function openFileSim(fileName) {
+      activeFile = fileName;
+      document.getElementById('current-file-name').textContent = fileName;
+      document.getElementById('file-editor-content').value = mockFiles[fileName] || '';
+
+      document.querySelectorAll('.file-item').forEach(btn => {
+        btn.classList.remove('bg-purple-900/60', 'border', 'border-purple-500/30');
+      });
+      event.currentTarget.classList.add('bg-purple-900/60', 'border', 'border-purple-500/30');
+    }
+
+    function saveCurrentFile() {
+      const content = document.getElementById('file-editor-content').value;
+      mockFiles[activeFile] = content;
+      showToast(`تم حفظ التغييرات في ${activeFile}`, 'success');
+      addConsoleLog(`[FILES] Updated file: ${activeFile}`);
+    }
+
+    function createNewFileSim() {
+      const fileName = prompt('أدخل اسم الملف الجديد (مثل utils.js):');
+      if (fileName) {
+        mockFiles[fileName] = `// New File: ${fileName}\n`;
+        openFileSim(fileName);
+        showToast(`تم إنشاء الملف ${fileName}`, 'success');
+      }
+    }
+
+    // نظام التنبيهات Toast System
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      let borderClass = 'border-purple-500/40 text-purple-100';
+      if (type === 'success') borderClass = 'border-emerald-500/50 text-emerald-200';
+      if (type === 'error') borderClass = 'border-red-500/50 text-red-200';
+
+      toast.className = `pointer-events-auto glass-card px-4 py-3 rounded-xl border ${borderClass} shadow-xl text-xs font-bold flex items-center gap-2 animate-bounce`;
+      toast.innerHTML = `<span>${message}</span>`;
+
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
+    }
+
+    // التشغيل الأول
+    renderBots();
+    drawChart();
+  </script>
+</body>
+</html>
