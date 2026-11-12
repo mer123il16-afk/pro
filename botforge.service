@@ -1,0 +1,20 @@
+[Unit]
+Description=BotForge
+After=network.target
+
+[Service]
+Type=simple
+User=botforge
+WorkingDirectory=/opt/botforge
+EnvironmentFile=/opt/botforge/.env
+ExecStart=/usr/bin/node --no-warnings server.js
+Restart=always
+RestartSec=3
+KillMode=control-group
+TimeoutStopSec=20
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
