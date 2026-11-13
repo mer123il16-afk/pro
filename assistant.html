@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10252B">
+<title>المساعد الشخصي</title>
+<style>
+:root{--bg:#10252B;--sf:#17353D;--sf2:#1F434D;--tx:#EDEFE6;--mu:#9DB4B2;--ac:#E3B04B;--ink:#2A1E05;--ok:#6FCF97;--er:#F2766B;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.7 "Noto Naskh Arabic","Noto Sans Arabic",system-ui,sans-serif;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:var(--sf2);border:1px solid #2d5a66;border-radius:10px;padding:6px 12px;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+button.pri{background:var(--ac);color:var(--ink);border-color:var(--ac);font-weight:700}
+button.dng{border-color:var(--er);color:var(--er)}
+header{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid #24464f}
+header{flex-wrap:wrap}header button{padding:4px 10px}header h1{font-size:1.15rem;margin:0;flex:1}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--er)}
+.dot.on{background:var(--ok)}
+#st{font-size:.8rem;color:var(--mu)}
+#chat{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+.m{max-width:88%;padding:10px 14px;border-radius:16px;white-space:pre-wrap;word-break:break-word}
+.m.a{background:var(--sf);align-self:flex-start;border-top-right-radius:4px}
+.m.u{background:var(--ac);color:var(--ink);align-self:flex-end;border-top-left-radius:4px}
+.m small{display:block;margin-top:4px}
+.m small button{background:none;border:0;padding:0;color:inherit;opacity:.7;text-decoration:underline;font-size:.8rem}
+pre{direction:ltr;text-align:left;background:#0B1B20;border-radius:8px;padding:8px 10px;overflow-x:auto;margin:6px 0;font:13px/1.5 ui-monospace,monospace;white-space:pre-wrap}
+code{direction:ltr;unicode-bidi:embed;background:#0B1B20;padding:0 5px;border-radius:5px;font-size:.9em}
+.card{border:1px solid var(--ac);border-radius:12px;padding:10px;margin:8px 0;background:#13303a;white-space:normal}
+.card b{color:var(--ac)}
+.card .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.card .res{color:var(--mu);font-size:.85rem}
+form{display:flex;gap:8px;padding:10px 14px;border-top:1px solid #24464f}
+textarea{flex:1;resize:none;background:var(--sf);border:1px solid #2d5a66;border-radius:12px;padding:8px 12px;height:46px;max-height:120px}
+.panel{position:fixed;inset:0;background:var(--bg);z-index:5;display:none;flex-direction:column;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+.panel.show{display:flex}
+.panel>div{flex:1;overflow-y:auto;padding:14px}
+.panel h2{margin:0;font-size:1.1rem;flex:1}
+.item{background:var(--sf);border-radius:10px;padding:8px 12px;margin-bottom:8px;display:flex;gap:8px;align-items:center}
+.item span{flex:1;overflow:hidden;text-overflow:ellipsis}
+label{display:block;margin:12px 0 4px;color:var(--mu);font-size:.9rem}
+input[type=text],input[type=password],select,.panel textarea{width:100%;background:var(--sf);border:1px solid #2d5a66;border-radius:10px;padding:8px 12px;height:auto}
+.chk{display:flex;align-items:center;gap:8px;margin:10px 0}
+.note{color:var(--mu);font-size:.85rem}
+.err{color:var(--er)}
+@media (prefers-reduced-motion:no-preference){.m{animation:in .2s ease-out}@keyframes in{from{opacity:0;transform:translateY(4px)}}}
+#intro{position:fixed;inset:0;z-index:99;background:radial-gradient(circle at 50% 40%,#1b3a45 0%,#0a1519 72%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;overflow:hidden;animation:ifade .7s ease 3s forwards}
+.ring{width:96px;height:96px;border-radius:50%;border:2px solid #e3b04b22;border-top-color:#e3b04b;border-bottom-color:#f6dc9a;box-shadow:0 0 40px #e3b04b44;margin-bottom:10px;animation:spin 1.4s linear infinite,pop .9s ease}
+#introN{font-size:38px;font-weight:800;background:linear-gradient(90deg,#b8862b,#f6dc9a,#e3b04b,#f6dc9a,#b8862b);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:rise 1s ease .3s both,shine 2.5s linear infinite}
+.ln{height:1px;width:0;background:linear-gradient(90deg,transparent,#e3b04b,transparent);animation:ext 1s ease 1s forwards}
+.by{font-size:14px;color:#9fb3ba;letter-spacing:3px;opacity:0;animation:rise .8s ease 1.4s forwards}
+.dev{font-size:24px;font-weight:700;color:#f6dc9a;text-shadow:0 0 18px #e3b04b88;opacity:0;animation:rise .9s ease 1.8s forwards}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes pop{from{transform:scale(.3);opacity:0}}@keyframes rise{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}@keyframes shine{to{background-position:200% center}}@keyframes ext{to{width:200px}}@keyframes ifade{to{opacity:0;visibility:hidden}}
+</style>
+</head>
+<body><div id="intro" onclick="this.remove()"><div class="ring"></div><div id="introN"></div><div class="ln"></div><div class="by">تطوير</div><div class="dev">فضل مهند العايدي</div></div>
+<header>
+  <h1 id="ttl">المساعد</h1><span class="dot" id="dot"></span><span id="st">…</span>
+  <button id="bO" aria-label="المالك">🔒</button><button id="bH">السجل</button><button id="bM">الذاكرة</button><button id="bS">الإعدادات</button>
+</header>
+<div id="chat" aria-live="polite"></div>
+<form id="f">
+  <button type="button" id="mic" hidden aria-label="إملاء صوتي">🎙</button>
+  <textarea id="inp" placeholder="اكتب رسالتك…" rows="1"></textarea>
+  <button class="pri" id="send">إرسال</button>
+</form>
+
+<section class="panel" id="p-hist"><header><h2>سجل المحادثات</h2><button data-close>إغلاق</button></header>
+  <div><button class="pri" id="newC">محادثة جديدة</button><p></p><div id="hl"></div></div></section>
+
+<section class="panel" id="p-mem"><header><h2>الذاكرة</h2><button data-close>إغلاق</button></header>
+  <div><p class="note">تحفظ هنا فقط ما تختاره أنت، وتُرسل للنموذج مع كل رسالة لتحسين الردود. المساعد لا يتدرّب على بياناتك.</p>
+  <label class="chk"><input type="checkbox" id="memOn"> تفعيل الذاكرة</label>
+  <input type="text" id="memNew" placeholder="أضف معلومة تريد حفظها"><p><button id="memAdd" class="pri">حفظ</button> <button id="memClr" class="dng">حذف الكل</button></p>
+  <div id="ml"></div></div></section>
+
+<section class="panel" id="p-set"><header><h2>الإعدادات</h2><button data-close>إغلاق</button></header>
+  <div>
+  <label>اسم المساعد</label><input type="text" id="sName">
+  <label>كيف يناديك</label><input type="text" id="sTitle">
+  <label>مزوّد النموذج</label><select id="sProv"><option value="anthropic">Anthropic</option><option value="openai">متوافق مع OpenAI</option></select>
+  <label>اسم النموذج</label><input type="text" id="sModel">
+  <label>لغة الردود</label><select id="sLang"><option value="ar">العربية</option><option value="en">English</option></select>
+  <label class="chk"><input type="checkbox" id="sVoice"> قراءة الردود صوتيًا (إن كان الجهاز يدعمه)</label>
+  <label>عنوان الخادم المحلي</label><input type="text" id="sSrv" dir="ltr">
+  <label>رمز الاقتران (يظهر عند تشغيل الخادم في Termux)</label><input type="password" id="sTok" dir="ltr">
+  <p><button id="sChk">تحقق من الرمز</button> <span id="sChkMsg" class="note"></span></p>
+  <p><button id="sSave" class="pri">حفظ الإعدادات</button> <span id="sMsg" class="note"></span></p>
+  <hr>
+  <h3>الخادم (داخل هذا الملف)</h3>
+  <p class="note">محلي: شغّله في Termux ويتوقف بإغلاقه. دائم: شغّله على سيرفر بعيد داخل tmux، فيبقى يعمل حتى لو أُطفئ جوالك أو حُذف Termux. ضع عنوانه (HTTPS) في «عنوان الخادم».</p>
+  <p><button id="dl" class="pri">تنزيل assistant_server.py</button> <button id="cp">نسخ السكربت</button></p>
+  <pre># تشغيل محلي على الجوال (الأسهل)
+1) pkg install python
+2) ضع assistant_server.py و assistant.html في نفس المجلد
+3) export ANTHROPIC_API_KEY="..."
+4) python assistant_server.py
+5) افتح http://127.0.0.1:8765 في المتصفح (لا تفتح الملف مباشرة)
+6) يشتغل فقط وانت مشغّله؛ تسكر Termux يوقف ولا يستهلك شي
+
+# على الجهاز البعيد (مرة واحدة)
+1) ثبّت: python3 و tmux ووكيل HTTPS (Caddy أو cloudflared)
+2) tmux new -s ast
+3) export ANTHROPIC_API_KEY="..."
+4) export ASSISTANT_PUBLIC_HOST=ast.example.com
+5) الصق الأمر المنسوخ من «إنشاء رمز جديد» وشغّله
+6) اخرج بـ Ctrl+B ثم D (يبقى الخادم شغّالًا)
+7) Caddyfile: ast.example.com { reverse_proxy 127.0.0.1:8765 }
+8) في «عنوان الخادم» ضع https://ast.example.com ثم اختبر الربط</pre>
+  <hr>
+  <h3>وضع المالك</h3>
+  <p class="note">يحمي إعدادات Termux. الرقم السري يُخزَّن مشفّرًا (PBKDF2) على هذا الجهاز.</p>
+  <div id="own"></div>
+  <div id="ownOnly" hidden>
+    <label>قواعدي (تمشي عليها دائمًا)</label><textarea id="sRules" rows="4"></textarea>
+    <h3>رمز الاقتران السري</h3>
+    <p class="note">يُنشأ هنا ولا يعرفه غيرك. انسخ الأمر إلى Termux مرة واحدة فقط، وبعدها يبقى محفوظًا في الخادم ولا تحتاج رمزًا جديدًا عند كل تشغيل.</p>
+    <p><button id="pairGen" class="pri">إنشاء رمز جديد</button> <button id="pairTest">اختبار الربط</button></p>
+    <pre id="pairCmd" hidden></pre><button id="pairCp" hidden>نسخ الأمر</button>
+    <label class="chk"><input type="checkbox" id="sTer"> تفعيل اتصال Termux (كل أمر يحتاج موافقتك)</label>
+    <label>الأوامر المسموحة (أمر في كل سطر)</label><textarea id="alw" rows="6" dir="ltr"></textarea>
+    <p><button id="alwSave">حفظ القائمة</button></p>
+    <p class="note">أوامر مثل rm وmv وpkg تتطلب تأكيدًا إضافيًا حتى لو أضفتها.</p>
+    <h3>الأوامر التي وافقت عليها</h3><div id="log"></div><button id="logClr" class="dng">مسح السجل</button>
+  </div></div></section>
+
+<script type="text/plain" id="srv">#!/usr/bin/env python3
+"""الخادم المحلي للمساعد - يعمل داخل Termux (مكتبة بايثون القياسية فقط).
+- يستمع على 127.0.0.1 فقط. للوضع البعيد ضع أمامه وكيل HTTPS واضبط ASSISTANT_PUBLIC_HOST.
+- يمرّر طلبات النموذج إلى المزوّد؛ المفتاح يبقى في متغيرات البيئة ولا يصل للواجهة.
+- ينفّذ أوامر Termux فقط إذا: (1) رمز الاقتران صحيح، (2) الأمر ضمن القائمة المسموحة،
+  (3) الواجهة أرسلت موافقة المستخدم الصريحة. لا يستخدم shell، فلا أنابيب ولا ; ولا >.
+"""
+import json, os, secrets, shlex, subprocess, urllib.request, urllib.error
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+ALLOW_FILE = HERE / "allowed.json"
+PORT = int(os.environ.get("ASSISTANT_PORT", "8765"))
+HOST = os.environ.get("ASSISTANT_HOST", "127.0.0.1")
+LOCAL = HOST in ("127.0.0.1", "localhost")
+PUBLIC_HOST = os.environ.get("ASSISTANT_PUBLIC_HOST", "")  # نطاقك خلف وكيل HTTPS
+TOKEN_FILE = Path.home() / ".assistant_token"
+PAIRED = False
+
+
+def load_token():
+    t = (os.environ.get("ASSISTANT_TOKEN") or "").strip()
+    if not t:
+        try:
+            t = TOKEN_FILE.read_text().strip()
+        except Exception:
+            t = ""
+    return t, bool(t)
+
+
+TOKEN, USER_SET = load_token()
+if not TOKEN:
+    TOKEN = secrets.token_urlsafe(12)
+DEFAULT_ALLOWED = ["ls", "pwd", "whoami", "date", "uname", "df", "free", "uptime",
+                   "ping", "ip", "termux-battery-status", "termux-wifi-connectioninfo"]
+# أوامر حساسة: إن أضافها المالك للقائمة تتطلب تأكيدًا إضافيًا في كل مرة
+DANGER = {"rm", "dd", "mkfs", "shutdown", "reboot", "chmod", "chown", "kill", "pkill",
+          "su", "sudo", "mv", "pkg", "apt", "pip", "termux-setup-storage", "termux-reload-settings"}
+MAX_OUT = 8000
+
+
+class Err(Exception):
+    def __init__(self, code, msg):
+        self.code, self.msg = code, msg
+
+
+def allowed():
+    try:
+        return [str(x) for x in json.loads(ALLOW_FILE.read_text())]
+    except Exception:
+        return list(DEFAULT_ALLOWED)
+
+
+def post_json(url, headers, body):
+    req = urllib.request.Request(url, json.dumps(body).encode(), headers, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=180) as r:
+            return json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode("utf-8", "ignore")[:300]
+        raise Err(502, f"رفض المزوّد الطلب ({e.code}): {detail}")
+    except Exception as e:
+        raise Err(502, f"تعذّر الوصول إلى المزوّد: {e}")
+
+
+def call_model(provider, model, system, messages):
+    if provider == "anthropic":
+        key = os.environ.get("ANTHROPIC_API_KEY")
+        if not key:
+            raise Err(503, "المتغير ANTHROPIC_API_KEY غير مضبوط في Termux.")
+        d = post_json("https://api.anthropic.com/v1/messages",
+                      {"x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+                      {"model": model, "max_tokens": 8000, "system": system, "messages": messages})
+        return "".join(b.get("text", "") for b in d.get("content", []) if b.get("type") == "text")
+    key, base = os.environ.get("AI_API_KEY"), os.environ.get("AI_BASE_URL", "").rstrip("/")
+    if not key or not base:
+        raise Err(503, "اضبط AI_API_KEY و AI_BASE_URL لمزوّد متوافق مع OpenAI.")
+    d = post_json(base + "/chat/completions",
+                  {"authorization": "Bearer " + key, "content-type": "application/json"},
+                  {"model": model, "max_tokens": 8000,
+                   "messages": [{"role": "system", "content": system}] + messages})
+    return d["choices"][0]["message"]["content"]
+
+
+def run_command(cmd, danger_ok):
+    try:
+        argv = shlex.split(cmd)
+    except ValueError:
+        raise Err(400, "صيغة الأمر غير صالحة.")
+    if not argv:
+        raise Err(400, "الأمر فارغ.")
+    if argv[0] not in allowed():
+        raise Err(403, f"الأمر «{argv[0]}» خارج القائمة المسموحة. يضيفه المالك من الإعدادات إن أراد.")
+    if (argv[0] in DANGER or any(a in ("-rf", "-fr", "-R") for a in argv)) and not danger_ok:
+        raise Err(409, "أمر حساس: يلزم تأكيد إضافي.")
+    try:
+        p = subprocess.run(argv, capture_output=True, text=True, timeout=20, cwd=str(Path.home()))
+    except subprocess.TimeoutExpired:
+        raise Err(504, "انتهت مهلة التنفيذ (20 ثانية).")
+    except FileNotFoundError:
+        raise Err(404, f"الأمر «{argv[0]}» غير مثبّت.")
+    return {"code": p.returncode, "out": (p.stdout + p.stderr)[:MAX_OUT]}
+
+
+class H(BaseHTTPRequestHandler):
+    def log_message(self, *a):
+        pass
+
+    def send(self, code, body, ctype="application/json; charset=utf-8"):
+        data = body if isinstance(body, bytes) else json.dumps(body, ensure_ascii=False).encode()
+        self.send_response(code)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Token")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Private-Network", "true")
+        self.end_headers()
+        self.wfile.write(data)
+
+    def do_OPTIONS(self):
+        self.send(204, b"", "text/plain")
+
+    def host_ok(self):
+        h = self.headers.get("Host", "")
+        return h in (f"127.0.0.1:{PORT}", f"localhost:{PORT}", f"[::1]:{PORT}") or (PUBLIC_HOST != "" and h == PUBLIC_HOST)
+
+    def authed(self):
+        return secrets.compare_digest(self.headers.get("X-Token", ""), TOKEN)
+
+    def do_GET(self):
+        if not self.host_ok():
+            return self.send(403, {"error": "مضيف غير مسموح"})
+        if self.path in ("/", "/index.html"):
+            f = next((p for p in (HERE / "index.html", HERE / "assistant.html") if p.exists()), HERE / "index.html")
+            if not f.exists():
+                return self.send(200, "الخادم يعمل. افتح ملف HTML واربطه بهذا العنوان.".encode(), "text/plain; charset=utf-8")
+            return self.send(200, f.read_bytes(), "text/html; charset=utf-8")
+        if self.path == "/api/status":
+            has = bool(os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("AI_API_KEY"))
+            return self.send(200, {"ok": True, "has_key": has})
+        if self.path == "/api/check":
+            if not self.authed():
+                return self.send(401, {"error": "رمز الاقتران غير صحيح"})
+            return self.send(200, {"ok": True, "valid": True})
+        if self.path == "/api/allowlist":
+            if not self.authed():
+                return self.send(401, {"error": "رمز الاقتران غير صحيح"})
+            return self.send(200, {"allowed": allowed()})
+        self.send(404, {"error": "غير موجود"})
+
+    def do_POST(self):
+        if not self.host_ok():
+            return self.send(403, {"error": "مضيف غير مسموح"})
+        if not self.authed():
+            return self.send(401, {"error": "رمز الاقتران غير صحيح"})
+        try:
+            n = int(self.headers.get("Content-Length", "0"))
+            b = json.loads(self.rfile.read(min(n, 200_000)) or b"{}")
+            if self.path == "/api/pair":
+                global PAIRED
+                if not PAIRED:
+                    PAIRED = True
+                    print("\n✅ تم الربط بنجاح")
+                return self.send(200, {"paired": True})
+            if self.path == "/api/chat":
+                text = call_model(b.get("provider", "anthropic"), b.get("model", ""),
+                                  str(b.get("system", ""))[:8000], b.get("messages", [])[-30:])
+                return self.send(200, {"text": text})
+            if self.path == "/api/exec":
+                if b.get("approved") is not True:
+                    raise Err(403, "لا تنفيذ دون موافقة صريحة.")
+                return self.send(200, run_command(str(b.get("command", "")), b.get("danger_ok") is True))
+            if self.path == "/api/allowlist":
+                lst = sorted({str(x).strip() for x in b.get("allowed", []) if str(x).strip() and " " not in str(x)})
+                ALLOW_FILE.write_text(json.dumps(lst, ensure_ascii=False))
+                return self.send(200, {"allowed": lst})
+            self.send(404, {"error": "غير موجود"})
+        except Err as e:
+            self.send(e.code, {"error": e.msg})
+        except Exception as e:
+            self.send(500, {"error": f"خطأ داخلي: {e}"})
+
+
+if __name__ == "__main__":
+    if not LOCAL and os.environ.get("ASSISTANT_BEHIND_HTTPS") != "1":
+        raise SystemExit("رفض التشغيل: الربط على عنوان عام دون HTTPS غير آمن. استخدم وكيل HTTPS على 127.0.0.1.")
+    print(f"\nالمساعد يعمل. افتح هذا العنوان في المتصفح:  http://{HOST}:{PORT}")
+    if USER_SET:
+        print("رمز الاقتران محفوظ (سرّي، لا يُعرض). بانتظار الربط من التطبيق...\n")
+    else:
+        print(f"رمز مؤقت (الصقه في الإعدادات):  {TOKEN}\n")
+    ThreadingHTTPServer((HOST, PORT), H).serve_forever()
+</script>
+<script>
+const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const DEF={name:'المساعد',title:'سيدي',provider:'anthropic',model:'claude-sonnet-5-5',lang:'ar',voice:false,memory:true,termux:false,server:location.protocol.startsWith('http')?location.origin:'http://127.0.0.1:8765',token:''};
+let S;try{S=JSON.parse(localStorage.getItem('ast')||'{}')}catch(e){S={}}
+S.settings={...DEF,...(S.settings||{})};S.convs=S.convs||[];S.memory=S.memory||[];S.log=S.log||[];S.pin=S.pin||null;
+const set=S.settings;let cur=S.convs.find(c=>c.id===S.cur);
+let owner=localStorage.getItem('own')==='1';
+const save=()=>{try{S.cur=cur&&cur.id;localStorage.setItem('ast',JSON.stringify(S))}catch(e){}};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function newConv(){cur={id:uid(),title:'محادثة جديدة',msgs:[]};S.convs.unshift(cur);save();draw()}
+if(!cur)newConv();
+
+// ---------- API ----------
+function crc32(b){const t=crc32.t||(crc32.t=Array.from({length:256},(_,n)=>{let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;return c>>>0}));let r=-1;for(const x of b)r=t[(r^x)&255]^(r>>>8);return(r^-1)>>>0}
+function mkzip(files){const E=new TextEncoder(),P=[],C=[];let off=0,cs=0;
+  for(const [n,t] of files){const nb=E.encode(n),d=E.encode(t),c=crc32(d);
+    const h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x800,true);h.setUint32(14,c,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,nb.length,true);
+    P.push(h.buffer,nb,d);
+    const g=new DataView(new ArrayBuffer(46));g.setUint32(0,0x02014b50,true);g.setUint16(4,20,true);g.setUint16(6,20,true);g.setUint16(8,0x800,true);g.setUint32(16,c,true);g.setUint32(20,d.length,true);g.setUint32(24,d.length,true);g.setUint16(28,nb.length,true);g.setUint32(42,off,true);
+    C.push(g.buffer,nb);cs+=46+nb.length;off+=30+nb.length+d.length}
+  const e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cs,true);e.setUint32(16,off,true);
+  return new Blob([...P,...C,e.buffer],{type:'application/zip'})}
+const CANDS=()=>[...new Set([set.server,'http://127.0.0.1:8765','http://localhost:8765'])];
+async function tfetch(u,o,ms){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms||4000);try{return await fetch(u,{...o,signal:c.signal})}finally{clearTimeout(t)}}
+async function reach(){for(const b of CANDS()){try{const r=await tfetch(b+'/api/status');if(r.ok){if(b!==set.server){set.server=b;save()}return b}}catch(e){}}return null}
+function DIAG(){return 'الخادم لا يستجيب.\n1) في Termux شغّل: python assistant_server.py\n2) افتح http://127.0.0.1:8765 في المتصفح'+(location.protocol==='file:'?' (أنت فاتح الملف مباشرة)':'')+'\n3) إذا هذا تطبيق محوَّل من HTML: لازم يسمح بـ HTTP المحلي.\nعنوان التطبيق الحالي: '+location.protocol+'//'+(location.host||'-')}
+async function api(path,body){
+  let r;
+  try{const b=await reach();if(!b)throw 0;
+    r=await tfetch(b+path,{method:body?'POST':'GET',headers:{'Content-Type':'application/json','X-Token':set.token},body:body?JSON.stringify(body):undefined},65000)}
+  catch(e){throw new Error(DIAG())}
+  let j={};try{j=await r.json()}catch(e){}
+  if(!r.ok){const e=new Error(r.status===401?'رمز الاقتران غير صحيح. انسخه من Termux إلى الإعدادات.':(j.error||'خطأ '+r.status));e.status=r.status;throw e}
+  return j;
+}
+async function ping(){
+  const dot=$('#dot'),st=$('#st'),off=()=>{dot.className='dot';st.textContent=location.protocol==='file:'?'غير متصل — افتح 127.0.0.1:8765':'الخادم غير متصل'};
+  const b=await reach();if(!b)return off();
+  try{const j=await(await tfetch(b+'/api/status')).json();
+    if(!set.token){dot.className='dot';st.textContent='متصل — أدخل رمز الاقتران';return}
+    const ok=(await tfetch(b+'/api/check',{headers:{'X-Token':set.token}})).ok;
+    if(!ok){dot.className='dot';st.textContent='الرمز غير صحيح ❌';return}
+    dot.className='dot'+(j.has_key?' on':'');st.textContent=j.has_key?'متصل ✓ الرمز صحيح':'الرمز صحيح — مفتاح API غير مضبوط'}
+  catch(e){off()}
+}
+
+// ---------- prompt ----------
+function sysPrompt(){
+  const rul=(S.rules?`\nقواعد وضعها المالك وتلتزم بها: ${S.rules}`:'')+`\nإذا طلب المالك تطبيقًا أو لعبة أو أداة، أعطه ملف HTML واحدًا كاملًا يعمل (CSS وJS داخله) داخل كتلة \`\`\`html بجودة عالية وواقعية. إذا طلب لعبة Godot (الإصدار 4) أعطه مشروعًا كاملًا: كل ملف في كتلة \`\`\`godot:المسار (مثل godot:project.godot وgodot:main.tscn وgodot:scripts/player.gd) ويشمل project.godot مع run/main_scene، بلا أصول ثنائية (أشكال وأصوات برمجية). إذا ذكر المالك معلومة أو تفضيلًا دائمًا، احفظه بكتلة \`\`\`remember في آخر ردك فيها جملة واحدة.`;
+  const per=S.persona?`\nالشخصية التي طلبها المالك الآن: «${S.persona}». تقمّصها بالكامل في النبرة والأسلوب والخبرة دون أن يشرح لك كيف، واستمر عليها حتى يطلب غيرها. التقمّص يغيّر الأسلوب فقط وقواعد الأمان أعلاه تبقى سارية.`:'';
+  const mem=set.memory&&S.memory.length?'\nمعلومات حفظها المالك لتحسين ردودك:\n- '+S.memory.map(m=>m.text).join('\n- '):'';
+  const ter=set.termux?`\nإذا احتاج الأمر تنفيذًا محليًا، اشرح أثره بجملة ثم اقترحه داخل كتلة \`\`\`termux (أمر واحد بسيط بلا أنابيب). لن يُنفَّذ شيء إلا بعد موافقة المالك. لا تقترح أوامر تقرأ كلمات المرور أو الرسائل أو جهات الاتصال أو تحذف بيانات.`:'';
+  return `أنت «${set.name}»، مساعد شخصي ودود ومحترم، تخاطب المالك بقولك «${set.title}». ${set.lang==='ar'?'أجب بالعربية.':'Answer in English.'} أنت قوي في البرمجة وشرح الأدوات والأمن السيبراني الدفاعي والتعلّم في مختبرات يملكها المستخدم أو لديه إذن باختبارها. تساعد في تأمين الأجهزة وتحليل سجلات يملكها المستخدم وشرح الثغرات وكتابة اختبارات آمنة. ترفض باختصار سرقة الحسابات أو كلمات المرور، ونشر البرمجيات الخبيثة، وتجاوز الحماية، واختراق أنظمة دون تصريح، وتقدّم بديلًا دفاعيًا أو مختبريًا مع ذكر السبب. كن مختصرًا ومفيدًا.${ter}${per}${rul}${mem}`;
+}
+
+// ---------- render ----------
+const DANGER=/\b(rm|dd|mkfs|shutdown|reboot|chmod|chown|kill|pkill|su|sudo|mv|pkg|apt|pip)\b|\s-(rf|fr|R)\b/;
+function fmt(t){
+  return esc(t).replace(/```(?!termux)\w*\n?([\s\S]*?)```/g,'<pre>$1</pre>').replace(/`([^`\n]+)`/g,'<code>$1</code>');
+}
+function draw(){
+  $('#ttl').textContent=set.name+(S.persona?' · '+S.persona:'');const box=$('#chat');box.innerHTML='';
+  if(!cur.msgs.length)add('a',`أهلًا ${set.title}، كيف أساعدك؟`,true);
+  cur.msgs.forEach((m,i)=>add(m.role==='user'?'u':'a',m.content,false,i));
+  box.scrollTop=box.scrollHeight;
+}
+function add(cls,text,local,idx){
+  const d=document.createElement('div');d.className='m '+cls;
+  const parts=text.split(/```termux\n?([\s\S]*?)```/);
+  parts.forEach((p,i)=>{
+    if(i%2===0){if(p.trim()){const s=document.createElement('span');s.innerHTML=fmt(p.trim());d.appendChild(s)}}
+    else d.appendChild(cmdCard(p.trim()));
+  });
+  if(cls==='u'&&!local){const s=document.createElement('small'),b=document.createElement('button');b.textContent='احفظ في الذاكرة';
+    b.onclick=()=>{S.memory.push({id:uid(),text:text.slice(0,300)});save();b.textContent='تم الحفظ';b.disabled=true};s.appendChild(b);d.appendChild(s)}
+  if(cls==='a'&&!local){const gf=[...text.matchAll(/```godot:([^\n]+)\n([\s\S]*?)```/g)].map(m=>[m[1].trim().replace(/^res:\/\//,''),m[2]]);
+    if(gf.length){const r=document.createElement('div');r.className='row';const b=document.createElement('button');b.className='pri';b.textContent='⬇ مشروع Godot (zip)';
+      b.onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(mkzip(gf));a.download='godot_project.zip';a.click()};r.append(b);d.appendChild(r)}}
+  if(cls==='a'&&!local)[...text.matchAll(/```html\n([\s\S]*?)```/g)].forEach((m,i)=>{const r=document.createElement('div');r.className='row';const U=()=>URL.createObjectURL(new Blob([m[1]],{type:'text/html'}));
+    const b1=document.createElement('button');b1.className='pri';b1.textContent='▶ تشغيل';b1.onclick=()=>window.open(U(),'_blank');
+    const b2=document.createElement('button');b2.textContent='تنزيل';b2.onclick=()=>{const a=document.createElement('a');a.href=U();a.download='app'+(i+1)+'.html';a.click()};
+    r.append(b1,b2);d.appendChild(r)});
+  $('#chat').appendChild(d);$('#chat').scrollTop=1e9;return d;
+}
+function cmdCard(cmd){
+  const c=document.createElement('div');c.className='card';const dg=DANGER.test(cmd);
+  c.innerHTML=`<b>أمر مقترح لـ Termux</b>${dg?' <span class="err">(حساس)</span>':''}<pre>${esc(cmd)}</pre><div class="res"></div><div class="row"></div>`;
+  const row=c.querySelector('.row'),res=c.querySelector('.res');
+  const mk=(t,cl,fn)=>{const b=document.createElement('button');b.textContent=t;if(cl)b.className=cl;b.onclick=fn;row.appendChild(b);return b};
+  mk('نسخ','',()=>navigator.clipboard&&navigator.clipboard.writeText(cmd));
+  if(!set.termux){res.textContent='اتصال Termux متوقف. يمكنك نسخ الأمر وتشغيله بنفسك، أو تفعيل الاتصال من وضع المالك.';return c}
+  const run=mk('الموافقة والتنفيذ','pri',async()=>{
+    let dOk=false;
+    if(dg){if(prompt('أمر حساس قد يغيّر أو يحذف بيانات. اكتب كلمة: أؤكد')!=='أؤكد'){res.textContent='أُلغي التنفيذ.';return}dOk=true}
+    run.disabled=true;res.textContent='جارٍ التنفيذ…';
+    try{const j=await api('/api/exec',{command:cmd,approved:true,danger_ok:dOk});
+      S.log.push({t:new Date().toLocaleString('ar'),cmd,code:j.code});save();
+      res.innerHTML='رمز الخروج: '+j.code+'<pre>'+esc(j.out||'(لا مخرجات)')+'</pre>';
+      mk('أرسل الناتج للمساعد','',()=>{send('ناتج الأمر `'+cmd+'`:\n```\n'+j.out+'\n```')});
+    }catch(e){res.innerHTML='<span class="err">'+esc(e.message)+'</span>';run.disabled=false}
+  });
+  mk('رفض','dng',()=>{c.remove()});
+  return c;
+}
+
+// ---------- send ----------
+let busy=false;
+function note(u,a){cur.msgs.push({role:'user',content:u},{role:'assistant',content:a});if(cur.msgs.length===2)cur.title=u.slice(0,40);save();draw()}
+function localCmd(t){
+  t=t.trim();if(!(owner||!S.pin))return false;let m;
+  if(m=t.match(/^(?:تعلّم|تعلم|احفظ|تذكّر|تذكر|remember)\s*[:：]\s*([\s\S]+)/i)){S.memory.push({id:uid(),text:m[1].trim().slice(0,300)});set.memory=true;save();note(t,'تعلّمتها وحفظتها بالذاكرة ✅');return true}
+  if(/^(?:ارجع عادي|رجع عادي|ارجع طبيعي|reset persona)$/i.test(t)){S.persona='';save();note(t,'رجعت لشخصيتي العادية.');return true}
+  if(m=t.match(/^(?:صير|صيّر|كن|اصير|تصرف\s*(?:ك|مثل)|become|act as)\s+([^\n]{2,60})$/i)){S.persona=m[1].trim();save()}
+  return false}
+async function send(text){
+  if(!busy&&text.trim()&&localCmd(text))return;
+  if(busy||!text.trim())return;busy=true;$('#send').disabled=true;
+  cur.msgs.push({role:'user',content:text});if(cur.msgs.length===1)cur.title=text.slice(0,40);
+  save();draw();const w=add('a','…',true);
+  try{
+    const j=await api('/api/chat',{provider:set.provider,model:set.model,system:sysPrompt(),messages:cur.msgs.slice(-20).map(m=>({role:m.role,content:m.content}))});
+    let tx=j.text||'(رد فارغ)';tx=tx.replace(/```remember\n?([\s\S]*?)```/g,(_,m)=>{if(m.trim()&&(owner||!S.pin))S.memory.push({id:uid(),text:m.trim().slice(0,300)});return ''}).trim()||'تم.';
+    cur.msgs.push({role:'assistant',content:tx});save();draw();speak(tx);
+  }catch(e){w.className='m a err';w.textContent=e.message;if(e.status===401)show('p-set')}
+  busy=false;$('#send').disabled=false;ping();
+}
+function speak(t){if(!set.voice||!window.speechSynthesis||!t)return;const u=new SpeechSynthesisUtterance(t.replace(/```[\s\S]*?```/g,''));u.lang=set.lang==='ar'?'ar-SA':'en-US';speechSynthesis.cancel();speechSynthesis.speak(u)}
+$('#f').onsubmit=e=>{e.preventDefault();const t=$('#inp').value;$('#inp').value='';send(t)};
+$('#inp').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&e.ctrlKey){$('#f').requestSubmit()}};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(SR){$('#mic').hidden=false;$('#mic').onclick=()=>{const r=new SR();r.lang=set.lang==='ar'?'ar-SA':'en-US';r.onresult=e=>{$('#inp').value+=e.results[0][0].transcript};r.start()}}
+
+// ---------- panels ----------
+const show=id=>{document.getElementById(id).classList.add('show');if(id==='p-hist')drawHist();if(id==='p-mem')drawMem();if(id==='p-set')drawSet()};
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('.panel').classList.remove('show'));
+$('#bH').onclick=()=>show('p-hist');$('#bM').onclick=()=>show('p-mem');$('#bS').onclick=()=>show('p-set');
+function item(box,label,btns){const d=document.createElement('div');d.className='item';const s=document.createElement('span');s.textContent=label;d.appendChild(s);
+  btns.forEach(([t,fn,cl])=>{const b=document.createElement('button');b.textContent=t;if(cl)b.className=cl;b.onclick=fn;d.appendChild(b)});box.appendChild(d)}
+function drawHist(){const b=$('#hl');b.innerHTML='';S.convs.forEach(c=>item(b,c.title,[['فتح',()=>{cur=c;save();draw();$('#p-hist').classList.remove('show')}],['حذف',()=>{S.convs=S.convs.filter(x=>x!==c);if(cur===c){S.convs.length?cur=S.convs[0]:newConv()}save();drawHist();draw()},'dng']]))}
+$('#newC').onclick=()=>{newConv();$('#p-hist').classList.remove('show')};
+function drawMem(){$('#memOn').checked=set.memory;const b=$('#ml');b.innerHTML='';
+  if(!S.memory.length)b.innerHTML='<p class="note">لا توجد عناصر محفوظة.</p>';
+  S.memory.forEach(m=>item(b,m.text,[['تعديل',()=>{const t=prompt('عدّل النص',m.text);if(t&&t.trim()){m.text=t.trim();save();drawMem()}}],['حذف',()=>{S.memory=S.memory.filter(x=>x!==m);save();drawMem()},'dng']]))}
+$('#memOn').onchange=e=>{set.memory=e.target.checked;save()};
+$('#memAdd').onclick=()=>{const t=$('#memNew').value.trim();if(t){S.memory.push({id:uid(),text:t});$('#memNew').value='';save();drawMem()}};
+$('#memClr').onclick=()=>{if(confirm('حذف كل الذاكرة؟')){S.memory=[];save();drawMem()}};
+
+// ---------- settings & owner ----------
+const F={sName:'name',sTitle:'title',sProv:'provider',sModel:'model',sLang:'lang',sSrv:'server',sTok:'token'};
+async function hash(pin,salt){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pin),'PBKDF2',false,['deriveBits']);
+  const b=await crypto.subtle.deriveBits({name:'PBKDF2',salt:Uint8Array.from(atob(salt),c=>c.charCodeAt(0)),iterations:150000,hash:'SHA-256'},k,256);return btoa(String.fromCharCode(...new Uint8Array(b)))}
+let fails=0,lockUntil=0;
+function drawSet(){
+  for(const[id,k]of Object.entries(F))$('#'+id).value=set[k];$('#sVoice').checked=set.voice;$('#sMsg').textContent='';
+  const o=$('#own');o.innerHTML='';
+  if(!S.pin){const b=document.createElement('button');b.textContent='إنشاء رقم سري للمالك';b.className='pri';b.onclick=async()=>{
+      const p=prompt('اختر رقمًا سريًا (6 أرقام على الأقل)');if(!p||p.length<6||p!==(prompt('أعد كتابته')||''))return alert('الرقمان غير متطابقين أو قصيران.');
+      const salt=btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16))));S.pin={salt,h:await hash(p,salt)};owner=true;localStorage.setItem('own','1');save();drawSet()};o.appendChild(b)}
+  else if(!owner){const b=document.createElement('button');b.textContent='فتح وضع المالك';b.className='pri';b.onclick=async()=>{
+      if(Date.now()<lockUntil)return alert('محاولات كثيرة. انتظر قليلًا.');
+      const p=prompt('الرقم السري');if(!p)return;
+      if(await hash(p,S.pin.salt)===S.pin.h){fails=0;owner=true;localStorage.setItem('own','1');drawSet()}else if(++fails>=5){lockUntil=Date.now()+60000;fails=0;alert('أُقفل لمدة دقيقة.')}else alert('رقم غير صحيح.')};o.appendChild(b)}
+  else{const b=document.createElement('button');b.textContent='قفل وضع المالك';b.onclick=()=>{owner=false;localStorage.removeItem('own');drawSet()};o.appendChild(b)}
+  $('#ownOnly').hidden=!owner;applyOwner();
+  if(owner){$('#sRules').value=S.rules||'';$('#sTer').checked=set.termux;drawLog();api('/api/allowlist').then(j=>$('#alw').value=j.allowed.join('\n')).catch(e=>$('#alw').value='')}
+}
+function drawLog(){const b=$('#log');b.innerHTML='';if(!S.log.length)b.innerHTML='<p class="note">لا أوامر مسجّلة.</p>';S.log.slice(-30).reverse().forEach(l=>item(b,l.t+' — '+l.cmd+' (خروج '+l.code+')',[]))}
+$('#logClr').onclick=()=>{S.log=[];save();drawLog()};
+$('#sChk').onclick=async()=>{const m=$('#sChkMsg');m.textContent='جاري الفحص…';
+  const b=await reach();if(!b){m.textContent='❌ الخادم غير متصل. شغّل Termux وافتح http://127.0.0.1:8765';return}
+  try{const r=await tfetch(b+'/api/check',{headers:{'X-Token':$('#sTok').value.trim()}});m.textContent=r.ok?'✅ الرمز صحيح والخادم متصل':'❌ الرمز خاطئ'}catch(e){m.textContent='❌ تعذّر الفحص'}};
+$('#sSave').onclick=()=>{for(const[id,k]of Object.entries(F))set[k]=$('#'+id).value.trim()||DEF[k]&&(k==='token'?'':DEF[k])||'';
+  set.token=$('#sTok').value.trim();set.voice=$('#sVoice').checked;if(owner){set.termux=$('#sTer').checked;S.rules=$('#sRules').value.trim()}
+  set.server=set.server.replace(/\/$/,'');save();draw();ping();$('#sMsg').textContent='تم الحفظ'};
+$('#alwSave').onclick=async()=>{try{const j=await api('/api/allowlist',{allowed:$('#alw').value.split('\n')});$('#alw').value=j.allowed.join('\n');$('#sMsg').textContent='حُفظت القائمة'}catch(e){$('#sMsg').textContent=e.message}};
+
+
+$('#dl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([$('#srv').textContent],{type:'text/x-python'}));a.download='assistant_server.py';a.click()};
+$('#cp').onclick=()=>navigator.clipboard&&navigator.clipboard.writeText($('#srv').textContent).then(()=>$('#sMsg').textContent='تم النسخ');
+$('#pairGen').onclick=()=>{
+  if(set.token&&!confirm('سيُستبدل الرمز الحالي ويلزم تحديثه في الخادم. متابعة؟'))return;
+  const c=btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(24)))).replace(/[+\/=]/g,x=>({'+':'-','/':'_','=':''}[x]));
+  set.token=c;$('#sTok').value=c;save();
+  $('#pairCmd').hidden=$('#pairCp').hidden=false;
+  $('#pairCmd').textContent="umask 077; echo '"+c+"' > ~/.assistant_token && python assistant_server.py";
+  $('#sMsg').textContent='انسخ الأمر إلى Termux ثم اضغط اختبار الربط'};
+$('#pairCp').onclick=()=>navigator.clipboard&&navigator.clipboard.writeText($('#pairCmd').textContent).then(()=>$('#sMsg').textContent='تم النسخ');
+$('#pairTest').onclick=async()=>{try{await api('/api/pair',{});$('#sMsg').textContent='✅ تم الربط';$('#pairCmd').hidden=$('#pairCp').hidden=true;ping()}catch(e){$('#sMsg').textContent=e.message}};
+function applyOwner(){const lock=!!S.pin&&!owner;$('#bM').hidden=lock;$('#bS').hidden=lock;$('#bO').textContent=owner?'🔓':'🔒'}
+$('#bO').onclick=async()=>{
+  if(!S.pin)return show('p-set');
+  if(owner){owner=false;localStorage.removeItem('own');applyOwner();return}
+  if(Date.now()<lockUntil)return alert('محاولات كثيرة. انتظر دقيقة.');
+  const p=prompt('كلمة السر');if(!p)return;
+  if(await hash(p,S.pin.salt)===S.pin.h){fails=0;owner=true;localStorage.setItem('own','1');applyOwner();draw()}
+  else if(++fails>=5){lockUntil=Date.now()+60000;fails=0;alert('أُقفل دقيقة.')}else alert('كلمة السر غير صحيحة.')};
+$('#introN').textContent=set.name;setTimeout(()=>{const i=$('#intro');i&&i.remove()},3700);
+applyOwner();draw();ping();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)ping()});
+if(!set.token&&(!S.pin||owner))setTimeout(()=>show('p-set'),400);
+</script>
+</body>
+</html>
