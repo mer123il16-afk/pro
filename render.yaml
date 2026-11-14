@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: assistant
-    runtime: docker
-    plan: free
-    envVars:
-      - key: ASSISTANT_TOKEN
-        generateValue: true
